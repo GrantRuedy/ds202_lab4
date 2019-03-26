@@ -39,7 +39,7 @@ biography$Name <- factor(biography$Name)
 2. & 3.
 ```{r}
 library(dplyr)
-defClean <-defense %>% mutate_at(c(3:11), as.numeric)
+defClean1 <-defense %>% mutate_at(c(3:11), as.numeric)
 offClean <- offense %>% mutate_at(c(3:12), as.numeric)
 biography <- biography %>% mutate_at(c(4), as.numeric)
 
@@ -47,7 +47,7 @@ biography$Height <-sapply(strsplit(as.character(biography$Height),"-"),
         function(x){12*as.numeric(x[1]) + as.numeric(x[2])}) #convert to inches
 bioClean <- biography
 
-str(defClean)
+str(defClean1)
 str(offClean)
 str(bioClean)
 ```
@@ -57,7 +57,7 @@ str(bioClean)
 1. & 2.
 ```{r}
 library(tidyr)
-defClean <-defClean %>%
+defClean <-defClean1 %>%
   gather(key=Statistic, value=count, 3:11) 
 head(defClean)
 
@@ -100,3 +100,29 @@ head(hometown)
 hometown %>% group_by(State) %>% summarize(Number_of_Players=n()) 
 ```
 
+##Joining
+
+##1. Join offense and bio
+
+```{r}
+off_bio = (left_join(offClean, bioClean,  by='Name'))
+```
+
+##2. Weight and Recieving yards
+```{r}
+library(ggplot2)
+ggplot(off_bio, aes(x=Weight, y=Receiving_YDS)) +geom_point()
+```
+
+According to the graph produced, there appears to be no relationship between weight and recieving yards.  The players who weigh 225 pounds have the biggest variation in receiving yards as they have our top wide recievers it appears.
+
+
+##3. Do heavier players get more tackles
+
+```{r}
+def_bio = (left_join(defClean1, bioClean,  by='Name'))
+ggplot(def_bio, aes(x=Weight, y=Tackles_Solo)) +geom_point()
+```
+
+
+It appears that actually lighter players record more tackles.  There are a lot more lighter players, but the top end of the players looks like it has a negative linear relationship.
